@@ -1,0 +1,664 @@
+<link rel="stylesheet" href="/select/select2.min.css" />
+<style>
+    .select2-dropdown {top: 22px !important; left: 8px !important;}
+</style>
+
+<style>
+    .contenedor {
+        margin: 0 auto;
+        align-content: center;
+        border-radius: 10px;
+        width: 70vw;
+        background-color: #F2F3F6;
+        height: auto;
+        padding: 1vw 0;
+        position: relative;
+    }
+
+    .loader {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.5);
+        width: 100%;
+        height: 100%;
+        top: 0;
+        display: flex;
+        align-items: center;
+
+        z-index: -1;
+        opacity: 0;
+        transition: all .1s .1s;
+    }
+
+    .loader.active {
+        z-index: 1;
+        opacity: 1;
+        transition: all .1s .1s;
+    }
+
+    .loader .status {
+        width: 18vw;
+        height: 10vw;
+        background: #fff;
+        margin: 0 auto;
+        border-radius: .5vw;
+        display: flex;
+        align-items: center;
+    }
+
+    .loader .status .centro {
+        width: 100%;
+    }
+
+    .loader .status span {
+        display: block;
+        width: 90%;
+        text-align: center;
+        font-size: 1vw;
+        color: blue;
+        margin: 0 auto;
+    }
+
+    .loader .status a {
+        display: block;
+        margin: 0 auto;
+        width: 6vw;
+        text-align: center;
+        background: #7ED321;
+        color: #f8f8f8;
+        padding: .5vw .5vw;
+        border-radius: .5vw;
+        font-size: 1vw;
+        margin-top: .5vw;
+        user-select: none;
+        z-index: -1;
+        opacity: 0;
+        transition: all .3s .3s;
+    }
+
+    .loader .status a.active {
+        z-index: 1;
+        opacity: 1;
+        transition: all .3s .3s;
+    }
+
+    .loader .status a:hover {
+        cursor: pointer;
+    }
+
+    .input_div {
+        margin: 0;
+        padding: 0 8vw;
+    }
+
+    .input_div.row .col {
+        float: left;
+        padding: .5vw 2vw;
+    }
+
+    .input_div.opciones {}
+
+    .input_div.opciones .col.c {
+        width: 15% !important;
+        height: 4vw;
+        padding: 0 !important;
+        text-align: left;
+    }
+
+    .input_div.opciones .col.c a {
+        background: red;
+        line-height: 4vw;
+        padding: .5vw 1vw;
+        border-radius: .4vw;
+        color: #f8f8f8;
+        user-select: none;
+    }
+
+    .input_div.opciones .col.a {
+        width: 70% !important;
+        padding: 0 !important;
+        height: 4vw !important;
+    }
+
+    .input_div.opciones .col.a h4 {
+        text-align: center;
+        font-weight: 800;
+        font-size: 1.2vw;
+        line-height: 4vw;
+    }
+
+    .input_div.opciones .col.b {
+        width: 15% !important;
+        height: 4vw;
+        padding: 0 !important;
+        text-align: right;
+    }
+
+    .input_div.opciones .col.b a {
+        background: cadetblue;
+        line-height: 4vw;
+        padding: .5vw 1vw;
+        border-radius: .4vw;
+        color: #f8f8f8;
+        user-select: none;
+    }
+
+    .input_div.opciones .col.b a:hover {
+        cursor: pointer;
+    }
+
+    .input_div.row .col.a {
+        width: 10vw;
+        padding: .5vw 0;
+    }
+
+    .input_div.row .col.a span {
+        display: block;
+        text-align: left;
+        font-size: 1vw;
+        font-weight: 800;
+        height: 3vw;
+        line-height: 3vw;
+    }
+
+    .input_div.row .col.b select {
+        width: 20vw;
+        height: 3vw;
+        outline: 0;
+        border: none;
+    }
+
+    .input_div.row .col.b input {
+        width: 20vw;
+        height: 3vw;
+        outline: 0;
+        border: none;
+        padding: 0 1vw;
+        border-radius: 5px;
+    }
+
+    .btn_add {
+        display: block;
+        padding: 1vw 8vw;
+        text-align: right;
+        font-size: .95vw;
+        font-weight: 800;
+        color: blue;
+        text-decoration: underline;
+        user-select: none;
+    }
+
+    .btn_add:hover {
+        cursor: pointer;
+    }
+
+    .input_items {
+        margin: 0;
+        padding: 0 8vw;
+        width: 100%;
+        height: auto;
+        margin-bottom: 1vw;
+    }
+
+    .error_a {
+        color: red;
+        display: block;
+        font-size: 1vw;
+        font-weight: 800;
+    }
+
+    table#item_detalleVenta {
+        width: 100%;
+        overflow-y: auto;
+    }
+
+    table#item_detalleVenta thead {
+        text-align: center;
+    }
+
+    table#item_detalleVenta thead tr {}
+
+    table#item_detalleVenta thead tr td {
+        font-size: 1vw;
+        font-weight: 800;
+        padding: .5vw 1vw;
+        border: 1px solid #000;
+        background: #000;
+        color: #f8f8f8;
+    }
+
+    table#item_detalleVenta tbody {
+        text-align: center;
+    }
+
+    table#item_detalleVenta tbody tr {}
+
+    table#item_detalleVenta tbody tr td {
+        padding: .5vw 0;
+        background-color: #fff;
+    }
+
+    table#item_detalleVenta tbody tr td.nombre_td {
+        text-align: left;
+    }
+
+    .input_div.derecha {}
+
+    .input_div.derecha .col.a {
+        width: 7vw;
+    }
+
+    .input_div.derecha .col.a span {
+        text-align: right;
+    }
+
+    .input_div.derecha div.padre {
+        width: auto;
+        height: 4vw;
+        float: right;
+    }
+
+    .input_div.derecha .col.b {
+        padding: .5vw 0 .5vw 1vw;
+    }
+
+    .input_div.derecha .col.b span {}
+
+    .input_div.derecha .col.b input {
+        width: 9vw;
+    }
+</style>
+
+<script>
+
+    $(document).ready(function (){
+        buscar();
+        function buscar() {
+            var valor;
+            var url = "/numerofacturaC";
+            $.ajax({
+                url: url,
+                success: function (data, textStatus, jqXHR) {
+                    console.log(data);
+                    var nro = '';
+                    $.each(data, function(index, item) {
+                        nro = item.nro;
+                    });
+                    if (nro < 10){
+                        valor = '000000000' + nro;
+                    } else if (nro >= 10 || nro <= 99){
+                        valor = '00000000' + nro;
+                    } else if (nro >= 100 || nro <=9999) {
+                        valor = '0000000' + nro;
+                    }
+                    $('#nro_factura').val(valor);                    
+                }, 
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR.responseText);                
+                }
+            });
+        }
+    });
+
+    $(function () {
+        var lista_item_detalleCompra = [];
+
+        $('#precio_unitario').change(function (e) {
+            this.value = parseFloat(this.value).toFixed(2);
+        });
+
+        function calcularTotalesFactura() {
+            let subtotal = 0;
+            let iva = 0;
+            let total = 0;
+
+            lista_item_detalleCompra.forEach(function (item) {
+                subtotal = subtotal + item.total_producto;
+            });
+
+            iva = redondear2Decimales(subtotal * 0.12);
+            total = redondear2Decimales(subtotal + iva);
+
+            $('#subtotal').val(subtotal);
+            $('#iva').val(iva);
+            $('#total').val(total);
+        }
+
+        function redondear2Decimales(num) {
+            return Math.round(num * 100) / 100;
+        }
+
+       
+        //Añadir item detalle compra a la tabla de la factura
+        var listaProductos = [];
+        $('#formulario_itemdv').submit(function (e) {
+            $('.error_a').text('');
+            e.preventDefault();
+            if ($('#id_producto').val() != 'none' && parseInt($('#cantidad').val()) > 0 && parseFloat($('#precio_unitario').val()) > 0.00) {
+                let producto = {
+                    id_producto: $('#id_producto').val().split('/')[0],
+                    nombre: $('#id_producto').val().split('/')[1],
+                    cantidad: $('#cantidad').val(),
+                    precio_unitario: $('#precio_unitario').val(),
+                    total_producto: redondear2Decimales(parseFloat($('#cantidad').val()) * parseFloat($('#precio_unitario').val()))
+                };
+                if (!listaProductos.includes(producto.id_producto)) {
+                    lista_item_detalleCompra.push(producto);
+                    /*console.log({
+                     id_producto: $('#id_producto').val().split('/')[0],
+                     nombre: $('#id_producto').val().split('/')[1],
+                     cantidad: $('#cantidad').val(),
+                     precio_unitario: $('#precio_unitario').val(),
+                     total_producto: parseFloat( $('#cantidad').val()) * parseFloat($('#precio_unitario').val())
+                     });*/
+                    let html = '<tr>';
+                    html += '   <td>' + lista_item_detalleCompra.length + '</td>';
+                    html += '   <td class="nombre_td">' + producto.nombre + '</td>';
+                    html += '   <td>' + producto.precio_unitario + '</td>';
+                    html += '   <td>' + producto.cantidad + '</td>';
+                    html += '   <td>' + producto.total_producto + '</td>';
+                    html += '</tr>';
+
+                    $('#body_table').append(html);
+                    $('#id_producto').val('none');
+                    $('#cantidad').val(0);
+                    $('#precio_unitario').val(0.00);
+
+                    //Calular total de la factura
+                    calcularTotalesFactura();
+                    //Agrega cada producto en la lista de productos que se vaya a comprar.
+                    listaProductos.push(producto.id_producto);
+                } else {
+                    console.log("YA ESTA AGREGADO");
+                    $('.error_a').text('Error, Producto ya se encuentra agregado para la Compra');
+                }
+
+                //console.log(listaProductos);
+            } else {
+                $('.error_a').text('Error, existen campos incompletos');
+            }
+        });
+
+        //Guardar la factura de compra en la BD
+        $('#guardar_factura').click(function () {
+            $('#loader').addClass('active');
+            $('#cerrar_loader').removeClass('active');
+
+            if ($('#id_empresa').val().length > 0 && $('#nro_factura').val().length > 0 && lista_item_detalleCompra.length > 0) {
+                let factura = {
+                    nro_factura: $('#nro_factura').val(),
+                    id_empresa: $('#id_empresa').val(),
+                    subtotal: $('#subtotal').val(),
+                    iva: $('#iva').val(),
+                    total: $('#total').val(),
+                    items_detalle_compra: []
+                };
+                //Se relaciona en cada DETALLE DE LA COMPRA a la factura a la que pertenece 
+                lista_item_detalleCompra.forEach(function (item) {
+                    factura.items_detalle_compra.push({
+                        id_producto: item.id_producto,
+                        cantidad: item.cantidad,
+                        valor_unitario: item.precio_unitario,
+                        valor_total: item.total_producto
+                    });
+                });
+
+
+
+                console.log(factura);
+                $.ajax({
+                    url: '/administracion/guardarCompra',
+                    type: "POST",
+                    cache: false,
+                    dataType: 'json',
+                    data: {factura: JSON.stringify(factura)}
+                }).done(function (data) {
+                    console.log(data);
+                    if (data.method.code == 0) {
+                        $('#mensaje').text(data.data);
+                        $('#cerrar_loader').addClass('active');
+                        
+                    } else {
+                        $('#mensaje').text(data.method.data);
+                        $('#cerrar_loader').addClass('active');
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    //Validar error y dar control de errores : status
+                    if (jqXHR.status === 0) {
+                        alert('Not connect: Verify Network.');
+                    } else if (jqXHR.status == 404) {
+                        alert('Requested page not found [404]');
+                    } else if (jqXHR.status == 500) {
+                        alert('Internal Server Error [500].');
+                    } else if (textStatus === 'parsererror') {
+                        alert('Requested JSON parse failed.');
+                    } else if (textStatus === 'timeout') {
+                        alert('Time out error.');
+                    } else if (textStatus === 'abort') {
+                        alert('Ajax request aborted.');
+                    } else {
+                        alert('Uncaught Error: ' + jqXHR.responseText);
+                    }
+                });
+            } else {
+                $('#loader').addClass('active')
+                $('#mensaje').text('ERROR, POR FAVOR SELECCIONE UNA EMPRESA');
+                $('#cerrar_loader').addClass('active');
+            }
+        });
+
+        $('#cerrar_loader').click(function () {
+            $('#loader').removeClass('active');
+            $('#mensaje').text('Guardando Factura ...');
+            $('#cerrar_loader').removeClass('active');
+        });
+    });
+
+</script>
+
+<div style="background: ">
+    <nav class="gtco-nav" role="navigation">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-2 col-xs-12">
+                    <div id="gtco-logo"><a style="font-size: 35px" href="/Admin">CIS</a></div>
+                </div>
+
+                <div style="text-align: right ; weigth: 10px">
+                   
+                    <ul>
+                        <!--Administrador -->
+                        <li><a href="/Clientes">Clientes</a>
+                        <li><a href="/administracion/productos">Productos</a>
+
+                            <!--AMBOS -->
+                        <li><a href="/administracion/registrarCompra">Compra</a>
+                        <li><a href="/administracion/registrarVenta"> Venta</a>
+                        <li><a href="/administracion/generarKardex">Generar Kardex</a>
+                        <li><a href="/libro">Libro Diario</a>
+                        
+
+                        <li class="btn-cta"><a href="/cerrar_sesion"
+                                               onclick="return confirm('¿Esta seguro de cerrar sesion?')"><span>Cerrar
+                                    Sesion</span></a></li>
+
+                    </ul>
+
+
+
+
+
+
+                </div> 
+            </div>
+
+        </div>
+    </nav>
+</div>
+
+
+
+
+
+<section id="gtco-hero" class="gtco-cover"
+         style="background-image: url(/images/fondos/clientes.jpg);" data-section="home"
+         data-stellar-background-ratio="0.0"> 
+
+    <div class="modal fade" role="dialog" id="modal1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Producto</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="formulario_itemdv" method="" action="">
+                        <div>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab"
+                                                                          data-toggle="tab">Detalles</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="home">
+                                    <div class="form-group">
+                                        <label for="id_producto" class="control-label">Producto</label>
+                                        <select class="form-control" id="id_producto" name="id_producto" style="width: 567px">
+                                            <option value="">Selecciona el producto</option>
+                                            {{#each productos as |producto i|}}
+                                            <option value="{{producto.id}}/{{producto.nombre}}">{{producto.nombre}}</option>
+                                            {{/each}}
+                                        </select>
+                                        
+                                        
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cantidad" class="control-label">Cantidad</label>
+                                        <input type="number" step="1" class="form-control" id="cantidad" name="cantidad">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="precio_unitario" class="control-label">Precio Unitario</label>
+                                        <input type="number" class="form-control" id="precio_unitario"
+                                               name="precio_unitario" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <span class="error_a"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Ingresar</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+    <div class="contenedor" style="margin-top: 150px;">
+        <div class="loader" id="loader">
+            <div class="status">
+                <div class="centro">
+                    <span id="mensaje">Guardando factura ...</span>
+                    <a id="cerrar_loader" onclick="location.reload()">Aceptar</a>
+                </div>
+            </div>
+        </div>
+        <form id="facturaCompraForm" action="" method="">
+            <div class="input_div row opciones">
+                <div class="col c">
+                    <a id="cerrar_factura" href="/Admin">Cerrar</a>
+                </div>
+                <div class="col a">
+                    <h4>Registrar Factura de Compra</h4>
+                </div>
+                <div class="col b">
+                    <a id="guardar_factura">Guardar</a>
+                </div>
+            </div>
+            <div class="input_div row">
+                <div class="col a">
+                    <span>Nroº Factura</span>
+                </div>
+                <div class="col b">
+                    <input type="text" id="nro_factura" name="nro_factura" readonly="" placeholder="Número de la factura">
+                </div>
+            </div>
+            <div class="input_div row">
+                <div class="col a">
+                    <span>Empresa</span>
+                </div>
+                <div class="col b">
+                    <select class="mdb-select md-form"  searchable="Search here.." id="id_empresa" name="id_empresa">
+                        <option value="">Selecciona la empresa</option>
+                        {{#each empresas as |empresa i|}}
+                        <option value="{{empresa.id}}">{{empresa.nombre}}</option>
+                        {{/each}}
+                    </select>
+
+
+                </div>
+            </div>
+            <span id="btn_add_detalleCompra" class="btn_add" data-toggle="modal" data-target="#modal1">Agregar Producto</span>
+            <div class="input_items">
+                <table id="item_detalleVenta">
+                    <thead>
+                        <tr>
+                            <td>Item</td>
+                            <td>Nombre</td>
+                            <td>Precio unitario</td>
+                            <td>Cantidad</td>
+                            <td>Subtotal</td>
+                        </tr>
+                    </thead>
+                    <tbody id="body_table">
+                    </tbody>
+                </table>
+            </div>
+            <div class="input_div row derecha">
+                <div class="padre">
+                    <div class="col a">
+                        <span>Sub Total</span>
+                    </div>
+                    <div class="col b">
+                        <input type="number" id="subtotal" name="subtotal" placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+            <div class="input_div row derecha">
+                <div class="padre">
+                    <div class="col a">
+                        <span>IVA 12%</span>
+                    </div>
+                    <div class="col b">
+                        <input type="number" id="iva" name="iva" placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+            <div class="input_div row derecha">
+                <div class="padre">
+                    <div class="col a">
+                        <span>Total</span>
+                    </div>
+                    <div class="col b">
+                        <input type="number" id="total" name="total" placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</section>
+<script src="/select/select2.min.js"></script>
+<script>
+                            $("#id_producto").select2({
+                                placeholder: "Selecciona el producto",
+                                allowClear: true
+                            });
+                            $("#id_empresa").select2({
+                                placeholder: "Selecciona la empresa",
+                                allowClear: true
+                            });
+</script>

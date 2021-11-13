@@ -1,0 +1,357 @@
+<script src="/javascripts/utilidades.js"></script>
+<style>
+    body {
+        background-image: url(/images/fondos/clientes.jpg);
+        background-repeat: no-repeat;
+        background-size: 102%;
+    }
+</style>
+
+<script>
+    /**
+    validar datos de los formularios
+    **/
+    $(document).ready(function () {
+
+        $.validator.addMethod("soloLetras", function (value, element) {
+            return this.optional(element) || /^[a-z\s]+$/i.test(value);
+        }, "Solo letras");
+
+        $.validator.addMethod("cedula", function (value, element) {
+            return this.optional(element) || validarCedula(value);
+        }, "Cedula Incorrecta");
+
+        $("#formulario4").validate({
+            rules: {
+                nombre: {
+                    required: true
+                },
+                cedula2: {
+                    required: true,
+                    number: true,
+                    cedula: true
+                },
+                apellidos2: {
+                    required: true,
+                    soloLetras: true
+                },
+                nombres2: {
+                    required: true,
+                    soloLetras: true
+                },
+                direccion2: {
+                    required: true,
+                },
+                telefono2: {
+                    required: true,
+                    number: true
+                }
+            }
+        });
+        $("#formulario77").validate({
+            rules: {
+                nombre: {
+                    required: true
+                },
+                cedula: {
+                    required: true,
+                    number: true,
+                    cedula: true
+                },
+                apellidos: {
+                    required: true,
+                    soloLetras: true
+                },
+                nombres: {
+                    required: true,
+                    soloLetras: true
+                },
+                direccion: {
+                    required: true,
+                },
+                telefono: {
+                    required: true,
+                    number: true
+                }
+            }
+        });
+    });</script>
+
+<script>
+
+    /**
+ Peticion para extrar los datos de acuerdo a una busqueda
+    **/
+    $(document).ready(function () {
+
+        $("#buscar").click(function () {
+            buscar();
+        });
+        function buscar() {
+            var criterio = $("#criterio").val();
+            var texto = $("#texto").val();
+            var url2 = "/buscarCliente";
+            $.ajax({
+                url: url2,
+                data: 'criterio=' + criterio + '&texto=' + texto,
+                success: function (data, textStatus, jqXHR) {
+
+                    console.log(data);
+                    var html = '';
+                    $.each(data, function (index, item) {
+
+                        html += '<tr>';
+                        html += '<td>' + item.cedula + '</td>';
+                        html += '<td>' + item.apellidos + " " + item.nombres + '</td>';
+                        html += '<td>' + item.direccion + '</td>';
+                        html += '<td>' + item.telefono + '</td>';
+                        html += '<td><a href="#" class="btn btn-info" data-toggle="modal" onclick=$("#cedula").val("' + item.cedula + '"),$("#apellidos").val("' + item.apellidos + '"),$("#nombres").val("' + item.nombres + '"),$("#telefono").val("' + item.telefono + '"),$("#direccion").val("' + item.direccion + '"),$("#idCliente").val("' + item.id + '")  data-target="#modal2">Editar</a>';
+                        html += '</tr>';
+                    });
+                    $("#tabla tbody").html(html);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR.responseText);
+                }
+            });
+        }
+
+
+    });</script>
+
+
+<br><br>
+<br>
+<br>
+
+<div>
+    <nav class="gtco-nav" role="navigation">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-2 col-xs-12">
+                    <div id="gtco-logo"><a style="font-size: 35px" href="/Admin">CIS</a></div>
+                </div>
+
+                <div style="text-align: right ; weigth: 10px">
+                    {{#if tipo}}
+                    <ul>
+                        <!--Administrador -->
+                        <li><a href="/Clientes">Clientes</a>
+                        <li><a href="/administracion/productos">Productos</a>
+
+                            <!--AMBOS -->
+                        <li><a href="/administracion/registrarCompra">Compra</a>
+                        <li><a href="/administracion/registrarVenta"> Venta</a>
+                        <li><a href="/administracion/generarKardex">Generar Kardex</a>
+                        <li><a href="/libro">Libro Diario</a>
+
+
+                        <li class="btn-cta"><a href="/cerrar_sesion"
+                                onclick="return confirm('¿Esta seguro de cerrar sesion?')"><span>Cerrar
+                                    Sesion</span></a></li>
+
+                    </ul>
+                    {{ else}}
+                    <ul>
+                        <li><a href="/Clientes">Clientes</a>
+                        <li> <a href="/administracion/registrarVenta">Venta</a></li>
+                        <!--AMBOS -->
+                        <li> <a href="/administracion/generarKardex">Generar Kardex</a></li>
+                        <li><a href="/libro">Libro Diario</a>
+                        <li class="btn-cta"><a href="/cerrar_sesion"
+                                onclick="return confirm('¿Esta seguro de cerrar sesion?')"><span>Cerrar
+                                    Sesion</span></a></li>
+                    </ul>
+
+                    {{/if}}
+                </div>
+            </div>
+
+        </div>
+    </nav>
+</div>
+
+
+
+
+<div class="container" style="margin-top: 75px;">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Listado de Clientes
+            <button class="btn btn-danger" style="margin-left: 960px; margin-top: -20px"
+                onclick="location.href = '/'">Volver</button>
+        </div>
+
+        <div class="panel-body">
+            <!--modal-->
+            <div class="modal fade" tabindex="-1" role="dialog" id="modal1">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header primary">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Registro de Cliente</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form id="formulario4" method="POST" action="/guardarCliente">
+                                <div>
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        <li role="presentation" class="active"><a href="#home" aria-controls="home"
+                                                role="tab" data-toggle="tab">Clientes</a></li>
+
+                                    </ul>
+
+                                    <!-- Tab panes -->
+                                    <div class="tab-content">
+                                        <div role="tabpanel" class="tab-pane active" id="home">
+                                            <div class="form-group">
+                                                <label for="cedula" class="control-label">Cedula:</label>
+                                                <input type="text" class="form-control" id="cedula2" name="cedula2">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="apellidos" class="control-label">Apellidos:</label>
+                                                <input type="text" class="form-control" id="apellidos2"
+                                                    name="apellidos2">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="nombres" class="control-label">Nombres:</label>
+                                                <input type="text" class="form-control" id="nombres2" name="nombres2">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="direccion" class="control-label">Direccion:</label>
+                                                <input type="text" class="form-control" id="direccion2"
+                                                    name="direccion2">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="dtelefono" class="control-label">Telefono:</label>
+                                                <input type="text" class="form-control" id="telefono2" name="telefono2">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-info">Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+            <!-- fin modal -->
+
+
+
+            <!--modal 2 para editar-->
+            <div class="modal fade" tabindex="-1" role="dialog" id="modal2">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header primary">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Editar un Cliente</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form id="formulario77" method="POST" action="/modificarCliente">
+
+                                <input name="idCliente" id="idCliente" type="hidden" />
+                                <div>
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        <li role="presentation" class="active"><a href="#home" aria-controls="home"
+                                                role="tab" data-toggle="tab">Producto</a></li>
+
+                                    </ul>
+
+                                    <!-- Tab panes -->
+                                    <div class="tab-content">
+                                        <div role="tabpanel" class="tab-pane active" id="home">
+                                            <div class="form-group">
+                                                <label for="cedula" class="control-label">Cedula:</label>
+                                                <input type="text" class="form-control" id="cedula" name="cedula"
+                                                    readonly="">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="apellidos" class="control-label">Apellidos:</label>
+                                                <input type="text" class="form-control" id="apellidos" name="apellidos">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="nombres" class="control-label">Nombres:</label>
+                                                <input type="text" class="form-control" id="nombres" name="nombres">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="direccion" class="control-label">Direccion:</label>
+                                                <input type="text" class="form-control" id="direccion" name="direccion">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="telefono" class="control-label">Telefono:</label>
+                                                <input type="text" class="form-control" id="telefono" name="telefono">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-info">Modificar</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+            <!-- fin modal -->
+
+            <div class="panel">
+                <div class="panel-body">
+                    <a href="#" class="btn btn-info" data-toggle="modal" data-target="#modal1">Nuevo</a>
+
+                    <select id="criterio">
+                        <option value="todos">Todos</option>
+                        <option value="cedula">Cedula</option>
+                        <!--<option value="apellidos">Apellidos</option>
+                        <option value="historial">Historial</option>-->
+                    </select>
+                    <input id="texto" />
+                    <button id="buscar" class="btn btn-info">Buscar</button>
+
+
+                </div>
+
+                <table class="table table-striped" id="tabla">
+                    <thead>
+                        <tr>
+                            <th scope="col">Cedula</th>
+                            <th scope="col">Persona</th>
+                            <th scope="col">Direccion</th>
+                            <th scope="col">Telefono</th>
+                            <th scope="col">Acciones</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {{#each lista as |lis i|}}
+
+                        <tr>
+
+                            <td>{{ lis.cedula }}</td>
+                            <td>{{ lis.apellidos }} {{ lis.nombres }}</td>
+                            <td>{{ lis.direccion }}</td>
+                            <td>{{ lis.telefono }}</td>
+                            <td><a href="#" class="btn btn-info" data-toggle="modal"
+                                    onclick="$('#cedula').val('{{lis.cedula}}'), $('#apellidos').val('{{lis.apellidos}}'), $('#nombres').val('{{lis.nombres}}'), $('#direccion').val('{{lis.direccion}}'), $('#idCliente').val('{{lis.id}}'), $('#telefono').val('{{lis.telefono}}')"
+                                    data-target="#modal2">Editar</a></td>
+
+                        </tr>
+
+                        {{/each}}
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>

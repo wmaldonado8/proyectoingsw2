@@ -1,0 +1,536 @@
+<link rel="stylesheet" href="/select/select2.min.css" />
+<style>
+    .select2-dropdown {
+        top: 22px !important;
+        left: 8px !important;
+    }
+</style>
+
+<style>
+    body {
+        font-size: .9vw;
+    }
+
+    .contenedor {
+        margin: 0 auto;
+        align-content: center;
+        border-radius: 10px;
+        width: 80vw;
+        background-color: #F2F3F6;
+        height: auto;
+        padding: 1vw 0;
+        position: relative;
+    }
+
+    .loader {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.5);
+        width: 100%;
+        height: 100%;
+        top: 0;
+        display: flex;
+        align-items: center;
+
+        z-index: -1;
+        opacity: 0;
+        transition: all .1s .1s;
+    }
+
+    .loader.active {
+        z-index: 1;
+        opacity: 1;
+        transition: all .1s .1s;
+    }
+
+    .loader .status {
+        width: 18vw;
+        height: 10vw;
+        background: #fff;
+        margin: 0 auto;
+        border-radius: .5vw;
+        display: flex;
+        align-items: center;
+    }
+
+    .loader .status .centro {
+        width: 100%;
+    }
+
+    .loader .status span {
+        display: block;
+        width: 90%;
+        text-align: center;
+        font-size: .9vw;
+        color: blue;
+        margin: 0 auto;
+    }
+
+    .loader .status a {
+        display: block;
+        margin: 0 auto;
+        width: 6vw;
+        text-align: center;
+        background: #7ED321;
+        color: #f8f8f8;
+        padding: .5vw .5vw;
+        border-radius: .5vw;
+        font-size: .9vw;
+        margin-top: .5vw;
+        user-select: none;
+        z-index: -1;
+        opacity: 0;
+        transition: all .3s .3s;
+    }
+
+    .loader .status a.active {
+        z-index: 1;
+        opacity: 1;
+        transition: all .3s .3s;
+    }
+
+    .loader .status a:hover {
+        cursor: pointer;
+    }
+
+    .input_div {
+        margin: 0;
+        padding: 0 8vw;
+    }
+
+    .input_div.row .col {
+        float: left;
+        padding: .5vw 2vw;
+    }
+
+    .input_div.opciones {}
+
+    .input_div.opciones .col.c {
+        width: 15% !important;
+        height: 4vw;
+        padding: 0 !important;
+        text-align: left;
+    }
+
+    .input_div.opciones .col.c a {
+        background: red;
+        line-height: 4vw;
+        padding: .5vw 1vw;
+        border-radius: .4vw;
+        color: #f8f8f8;
+        user-select: none;
+    }
+
+    .input_div.opciones .col.a {
+        width: 70% !important;
+        padding: 0 !important;
+        height: 4vw !important;
+    }
+
+    .input_div.opciones .col.a h4 {
+        text-align: center;
+        font-weight: 800;
+        font-size: 1.2vw;
+        line-height: 4vw;
+    }
+
+    .input_div.opciones .col.b {
+        width: 15% !important;
+        height: 4vw;
+        padding: 0 !important;
+        text-align: right;
+    }
+
+    .input_div.opciones .col.b a {
+        background: cadetblue;
+        line-height: 4vw;
+        padding: .5vw 1vw;
+        border-radius: .4vw;
+        color: #f8f8f8;
+        user-select: none;
+    }
+
+    .input_div.opciones .col.b a:hover {
+        cursor: pointer;
+    }
+
+    .input_div.row .col.a {
+        width: 10vw;
+        padding: .5vw 0;
+    }
+
+    .input_div.row .col.a span {
+        display: block;
+        text-align: left;
+        font-size: .9vw;
+        font-weight: 800;
+        height: 3vw;
+        line-height: 3vw;
+    }
+
+    .input_div.row .col.b select {
+        width: 20vw;
+        height: 3vw;
+        outline: 0;
+        border: none;
+    }
+
+    .input_div.row .col.b input {
+        width: 20vw;
+        height: 3vw;
+        outline: 0;
+        border: none;
+        padding: 0 1vw;
+        border-radius: 5px;
+    }
+
+    .btn_add {
+        display: block;
+        padding: 1vw 8vw;
+        text-align: right;
+        font-size: .95vw;
+        font-weight: 800;
+        color: blue;
+        text-decoration: underline;
+        user-select: none;
+    }
+
+    .btn_add:hover {
+        cursor: pointer;
+    }
+
+    .input_items {
+        margin: 0;
+        padding: 0 8vw;
+        width: 100%;
+        height: auto;
+        margin-bottom: 1vw;
+    }
+
+    .error_a {
+        color: red;
+        display: block;
+        font-size: .9vw;
+        font-weight: 800;
+    }
+
+    table#item_detalleVenta {
+        width: 100%;
+        overflow-y: auto;
+        margin-top: 3vw;
+    }
+
+    table#item_detalleVenta thead {
+        text-align: center;
+    }
+
+    table#item_detalleVenta thead tr {}
+
+    table#item_detalleVenta thead tr td {
+        font-size: .9vw;
+        padding: .5vw 1vw;
+        border: 1px solid #000;
+        color: #000;
+    }
+
+    table#item_detalleVenta thead tr.a td {
+        font-weight: 800;
+    }
+
+    table#item_detalleVenta thead tr.b td {
+        font-weight: 540;
+    }
+
+    table#item_detalleVenta thead tr.c td {
+        text-align: left;
+    }
+
+    table#item_detalleVenta tbody {
+        text-align: center;
+    }
+
+    table#item_detalleVenta tbody tr {}
+
+    table#item_detalleVenta tbody tr td {
+        font-size: .9vw;
+        padding: .5vw 0;
+        border: 1px solid #000;
+        color: #414773;
+    }
+
+    table#item_detalleVenta tbody tr td.nombre_td {
+        text-align: left;
+    }
+
+    .input_div.derecha {}
+
+    .input_div.derecha .col.a {
+        width: 7vw;
+    }
+
+    .input_div.derecha .col.a span {
+        text-align: right;
+    }
+
+    .input_div.derecha div.padre {
+        width: auto;
+        height: 4vw;
+        float: right;
+    }
+
+    .input_div.derecha .col.b {
+        padding: .5vw 0 .5vw 1vw;
+    }
+
+    .input_div.derecha .col.b span {}
+
+    .input_div.derecha .col.b input {
+        width: 9vw;
+    }
+</style>
+
+<script src="/js/PruebaPDFJS/xepOnline.jqPlugin.js"></script>
+<script>
+    $(function () {
+
+        var kardex_data = [];
+
+        var meses = ["Ene", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Agos", "Sep", "Oct", "Nov", "Dec"];
+
+        function redondear2Decimales(num) {
+            return Math.round(num * 100) / 100;
+        }
+        /**
+        recorro los datos  para generar el kardex
+        **/
+        function generarItemsTabla(items_kardex) {
+            $('#body_table').empty();
+            items_kardex.forEach(function (item) {
+                let html = '';
+
+                let fecha = new Date(item.createdAt);
+                if (item.tipo == 0) {
+                    //Entrada - Compra
+                    html += '<tr>';
+                    html += '   <td rowspan="1" colspan="1">' + fecha.getDate() + '-' + meses[fecha.getMonth()] + '</td>'; //Fecha
+                    html += '   <td rowspan="1" colspan="1">' + item.descripcion + '</td>'; //Detalle
+                    html += '   <td rowspan="1" colspan="1">' + item.es_cantidad + '</td>'; //Entrada C
+                    html += '   <td rowspan="1" colspan="1">' + item.es_valor_unitario + '</td>'; //Entrada VU
+                    html += '   <td rowspan="1" colspan="1">' + item.es_valor_total + '</td>'; //Entrada Vt
+                    html += '   <td rowspan="1" colspan="1"></td>'; //Salida C
+                    html += '   <td rowspan="1" colspan="1"></td>'; //Salida Vu
+                    html += '   <td rowspan="1" colspan="1"></td>'; //Salida Vt
+                    html += '   <td rowspan="1" colspan="1">' + item.e_cantidad + '</td>'; //Existencias C
+                    html += '   <td rowspan="1" colspan="1">' + item.e_valor_unitario + '</td>'; //Existencias Vu
+                    html += '   <td rowspan="1" colspan="1">' + item.e_valor_total + '</td>'; //Existencias Vt
+                    html += '/<tr>';
+                } else if (item.tipo == 1) {
+                    //Salida - Venta
+                    html += '<tr>';
+                    html += '   <td rowspan="1" colspan="1">' + fecha.getDate() + '-' + meses[fecha.getMonth()] + '</td>'; //Fecha
+                    html += '   <td rowspan="1" colspan="1">' + item.descripcion + '</td>'; //Detalle
+                    html += '   <td rowspan="1" colspan="1"></td>'; //Entrada C
+                    html += '   <td rowspan="1" colspan="1"></td>'; //Entrada VU
+                    html += '   <td rowspan="1" colspan="1"></td>'; //Entrada Vt
+                    html += '   <td rowspan="1" colspan="1">' + item.es_cantidad + '</td>'; //Salida C
+                    html += '   <td rowspan="1" colspan="1">' + item.es_valor_unitario + '</td>'; //Salida Vu
+                    html += '   <td rowspan="1" colspan="1">' + item.es_valor_total + '</td>'; //Salida Vt
+                    html += '   <td rowspan="1" colspan="1">' + item.e_cantidad + '</td>'; //Existencias C
+                    html += '   <td rowspan="1" colspan="1">' + item.e_valor_unitario + '</td>'; //Existencias Vu
+                    html += '   <td rowspan="1" colspan="1">' + item.e_valor_total + '</td>'; //Existencias Vt
+                    html += '/<tr>';
+                }
+                $('#body_table').append(html);
+            });
+        }
+
+        //Guardar la factura de compra en la Base de Datos peticion AJAX de tipo POST
+        $('#id_producto').change(function () {
+            let id_producto = $(this).val().split('/')[0];
+            let nombre_producto = $(this).val().split('/')[1];
+            if (id_producto != 'none') {
+                $.ajax({
+                    url: '/administracion/getItemsKardexByIdProductoOrderByFecha',
+                    type: "POST",
+                    cache: false,
+                    dataType: 'json',
+                    data: { id_producto: id_producto }
+                }).done(function (data) {
+                    //console.log(data);
+                    if (data.code == 0) {
+                        kardex_data.push({
+                            id_producto: id_producto,
+                            items: data.items_kardex
+                        });
+                        $('#nombre_producto').text(nombre_producto);
+
+                        /**
+                             LLamo a la funcion generar tabla y envio los datos 
+                        **/
+                        generarItemsTabla(data.items_kardex);
+                    } else {
+                        alert(data.data);
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    //Validar error y dar control de errores : status
+                    if (jqXHR.status === 0) {
+                        alert('Not connect: Verify Network.');
+                    } else if (jqXHR.status == 404) {
+                        alert('Requested page not found [404]');
+                    } else if (jqXHR.status == 500) {
+                        alert('Internal Server Error [500].');
+                    } else if (textStatus === 'parsererror') {
+                        alert('Requested JSON parse failed.');
+                    } else if (textStatus === 'timeout') {
+                        alert('Time out error.');
+                    } else if (textStatus === 'abort') {
+                        alert('Ajax request aborted.');
+                    } else {
+                        alert('Uncaught Error: ' + jqXHR.responseText);
+                    }
+                });
+            } else {
+                alert('Error, debes seleccionar el producto');
+            }
+        });
+    });
+</script>
+
+<div>
+    <nav class="gtco-nav" role="navigation">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-2 col-xs-12">
+                    <div id="gtco-logo"><a style="font-size: 35px" href="/Admin">CIS</a></div>
+                </div>
+
+                <div style="text-align: right ; weigth: 10px">
+                    {{#if tipo}}
+                    <ul>
+                        <!--Administrador -->
+                        <li><a href="/Clientes">Clientes</a>
+                        <li><a href="/administracion/productos">Productos</a>
+
+                            <!--AMBOS -->
+                        <li><a href="/administracion/registrarCompra">Compra</a>
+                        <li><a href="/administracion/registrarVenta"> Venta</a>
+                        <li><a href="/administracion/generarKardex">Generar Kardex</a>
+                        <li><a href="/libro">Libro Diario</a>
+
+
+                        <li class="btn-cta"><a href="/cerrar_sesion"
+                                onclick="return confirm('¿Esta seguro de cerrar sesion?')"><span>Cerrar
+                                    Sesion</span></a></li>
+
+                    </ul>
+
+
+                    {{else}}
+                    <ul>
+                        <li><a href="/Clientes">Clientes</a>
+                        <li><a href="/administracion/registrarVenta">Venta</a></li>
+                        <!--AMBOS -->
+                        <li><a href="/administracion/generarKardex">Generar Kardex</a></li>
+                        <li><a href="/libro">Libro Diario</a>
+                        <li class="btn-cta"><a href="/cerrar_sesion"
+                                onclick="return confirm('¿Esta seguro de cerrar sesion?')"><span>Cerrar
+                                    Sesion</span></a></li>
+
+
+                    </ul>
+
+                    {{/if}}
+                </div>
+            </div>
+
+        </div>
+    </nav>
+</div>
+
+
+<section id="gtco-hero" class="gtco-cover"
+    style="background-image: url(/images/fondos/libroDiario.jpg);"
+    data-section="home" data-stellar-background-ratio="0.0">
+
+
+
+
+    <div class="contenedor" style="margin-top: 100px;">
+        <form id="facturaCompraForm">
+            <div class="input_div row opciones">
+                <div class="col c">
+                    <a id="cerrar_factura" href="{{rol}}">Cerrar</a>
+                </div>
+                <div class="col a">
+                    <h4>Generar Kardex</h4>
+                </div>
+                <div class="col b">
+                    <a id="exportar_pdf"
+                        onclick="return xepOnline.Formatter.Format('item_detalleVenta', {srctype: 'html', render: 'download', filename: 'Prueba de kardex', cssStyle: [{padding: '0'}]});">PDF</a>
+                </div>
+            </div>
+            <div class="input_div row">
+                <div class="col a">
+                    <span>Producto</span>
+                </div>
+                <div class="col b">
+                    <select id="id_producto" name="id_producto">
+                        <option value="">Selecciona el producto</option>
+                        {{#each productos as |producto i|}}
+                        <option value="{{producto.id}}/{{producto.nombre}}">{{producto.nombre}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+            <div class="input_items" id="contenedor_tabla">
+                <table id="item_detalleVenta">
+                    <thead>
+                        <tr class="a">
+                            <td colspan="11">Zona-WIFI</td>
+                        </tr>
+                        <tr class="b">
+                            <td colspan="11">Kardex de materia prima</td>
+                        </tr>
+                        <tr class="c">
+                            <td colspan="8"><strong>Artículo:</strong> <span id="nombre_producto">Nombre del
+                                    producto</span></td>
+                            <td colspan="3"><strong>Máximo:</strong> <span id="maximo_producto">300</span></td>
+                        </tr>
+                        <tr class="c">
+                            <td colspan="8"><strong>Método:</strong> <span id="metodo_producto">Promedio
+                                    Ponderado</span></td>
+                            <td colspan="3"><strong>Mínimo:</strong> <span id="minimo_producto">30</span></td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">Fecha</td>
+                            <td rowspan="2">Detalle</td>
+                            <td rowspan="1" colspan="3">Entradas</td>
+                            <td rowspan="1" colspan="3">Salidas</td>
+                            <td rowspan="1" colspan="3">Existencias</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="1" colspan="1">C</td>
+                            <td rowspan="1" colspan="1">Vu</td>
+                            <td rowspan="1" colspan="1">VT</td>
+                            <td rowspan="1" colspan="1">C</td>
+                            <td rowspan="1" colspan="1">Vu</td>
+                            <td rowspan="1" colspan="1">VT</td>
+                            <td rowspan="1" colspan="1">C</td>
+                            <td rowspan="1" colspan="1">Vu</td>
+                            <td rowspan="1" colspan="1">VT</td>
+                        </tr>
+                    </thead>
+                    <tbody id="body_table">
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+
+</section>
+<script src="/select/select2.min.js"></script>
+<script>
+    $("#id_producto").select2({
+        placeholder: "Selecciona el producto",
+        allowClear: true
+    });
+</script>

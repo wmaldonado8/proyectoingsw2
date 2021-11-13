@@ -1,0 +1,477 @@
+<script>
+    //validadores
+
+
+
+    $(document).ready(function () {
+        buscar();
+    });
+
+    function buscar() {
+/**
+Con un servicio llamo al metodo generLB el cual nos retoran todos los datos de la transacciones , que hayan ocurrido
+**/
+
+        var debe = (1 * 1) - 1;
+
+        var url = "http://localhost:3002/generarLB";
+        $.ajax({
+            url: url,
+            success: function (data, textStatus, jqXHR) {
+
+
+
+                $.each(data, function (index, item) {
+
+                    debe = item.monto + debe;
+
+                    console.log(item);
+
+                    var meses = ["Ene", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Agos", "Sep", "Oct", "Nov", "Dec"];
+                    let html = '';
+                    //Estado inicial
+                    let fecha = new Date(item.fecha);
+                    if (item.tipo == "Venta") {
+
+                        html += '<tr>';
+                        html += '   <td rowspan="1" colspan="1"><strong>' + fecha.getDate() + '-' + meses[fecha.getMonth()] + '</strong></td>'; //Fecha
+                        //html += '   <td rowspan="1" colspan="1">' + item.fecha + '</td>'; //Detalle
+                        html += '   <td rowspan="1" colspan="4">' + "Caja" + "<br>  " + item.descripcion + '</td>'; //Entrada C
+                        html += '   <td rowspan="1" colspan="2">' + " ---  <br>FAC " +item.referencia + '</td>'; //Entrada C
+                        html += '   <td rowspan="1" colspan="2">' + '$ ' + item.monto + "<br> ---" + '</td>'; //Entrada C
+                        html += '   <td rowspan="1" colspan="3">' + " --- <br> $ " + item.monto + '</td>'; //Entrada C
+                        // html += '   <td rowspan="1" colspan="1">'+fecha.getDate()+'-'+meses[fecha.getMonth()]+'</td>'; //Fecha
+
+                        html += '/<tr>';
+                    } else if (item.tipo == "Compra") {
+
+                        html += '<tr>';
+                        html += '   <td rowspan="1" colspan="1"> <strong>' + fecha.getDate() + '-' + meses[fecha.getMonth()] + '</strong></td>'; //Fecha
+                        //html += '   <td rowspan="1" colspan="1">' + item.fecha + '</td>'; //Detalle
+                        html += '   <td rowspan="1" colspan="4">' + item.descripcion + "<br>   Caja" + '</td>'; //Entrada C
+                        html += '   <td rowspan="1" colspan="2">' + "FAC " + item.referencia + " <br> ---  " + '</td>'; //Entrada C
+                        html += '   <td rowspan="1" colspan="2">' + '$ ' + item.monto + " <br> ---  " + '</td>'; //Entrada C
+
+                        html += '   <td rowspan="1" colspan="3">' + " --- <br> $  " + item.monto + '</td>'; //Entrada C
+
+                        html += '/<tr>';
+
+                    }
+
+                    $('#body_table').append(html);
+
+                });
+                var html1 = '';
+                html1 += '<tr>';
+                html1 += '   <td rowspan="1" colspan="1"><strong>' + "----" + '</strong></td>'; //Entrada C
+                html1 += '   <td rowspan="1" colspan="4">' + "<b>SUMAN</b>" + '</td>'; //Entrada C
+                html1 += '   <td rowspan="1" colspan="2">' + "----" + '</td>'; //Entrada C
+                html1 += '   <td rowspan="1" colspan="2"><b>' + '$ ' + debe + '</b></td>'; //Entrada C
+                html1 += '   <td rowspan="1" colspan="3"><strong>' + '$ ' + debe + '</strong></td>'; //Entrada C
+                html1 += '/<tr>';
+                $('#body_table').append(html1);
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+
+</script>
+
+
+
+
+<style>
+    body {
+        font-size: .9vw;
+    }
+
+    .contenedor {
+        margin: 0 auto;
+        align-content: center;
+        border-radius: 10px;
+        width: 80vw;
+        background-color: #F2F3F6;
+        height: auto;
+        padding: 1vw 0;
+        position: relative;
+    }
+
+    .loader {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.5);
+        width: 100%;
+        height: 100%;
+        top: 0;
+        display: flex;
+        align-items: center;
+
+        z-index: -1;
+        opacity: 0;
+        transition: all .1s .1s;
+    }
+
+    .loader.active {
+        z-index: 1;
+        opacity: 1;
+        transition: all .1s .1s;
+    }
+
+    .loader .status {
+        width: 18vw;
+        height: 10vw;
+        background: #fff;
+        margin: 0 auto;
+        border-radius: .5vw;
+        display: flex;
+        align-items: center;
+    }
+
+    .loader .status .centro {
+        width: 100%;
+    }
+
+    .loader .status span {
+        display: block;
+        width: 90%;
+        text-align: center;
+        font-size: .9vw;
+        color: blue;
+        margin: 0 auto;
+    }
+
+    .loader .status a {
+        display: block;
+        margin: 0 auto;
+        width: 6vw;
+        text-align: center;
+        background: #7ED321;
+        color: #f8f8f8;
+        padding: .5vw .5vw;
+        border-radius: .5vw;
+        font-size: .9vw;
+        margin-top: .5vw;
+        user-select: none;
+        z-index: -1;
+        opacity: 0;
+        transition: all .3s .3s;
+    }
+
+    .loader .status a.active {
+        z-index: 1;
+        opacity: 1;
+        transition: all .3s .3s;
+    }
+
+    .loader .status a:hover {
+        cursor: pointer;
+    }
+
+    .input_div {
+        margin: 0;
+        padding: 0 8vw;
+    }
+
+    .input_div.row .col {
+        float: left;
+        padding: .5vw 2vw;
+    }
+
+    .input_div.opciones {}
+
+    .input_div.opciones .col.c {
+        width: 15% !important;
+        height: 4vw;
+        padding: 0 !important;
+        text-align: left;
+    }
+
+    .input_div.opciones .col.c a {
+        background: red;
+        line-height: 4vw;
+        padding: .5vw 1vw;
+        border-radius: .4vw;
+        color: #f8f8f8;
+        user-select: none;
+    }
+
+    .input_div.opciones .col.a {
+        width: 70% !important;
+        padding: 0 !important;
+        height: 4vw !important;
+    }
+
+    .input_div.opciones .col.a h4 {
+        text-align: center;
+        font-weight: 800;
+        font-size: 1.2vw;
+        line-height: 4vw;
+    }
+
+    .input_div.opciones .col.b {
+        width: 15% !important;
+        height: 4vw;
+        padding: 0 !important;
+        text-align: right;
+    }
+
+    .input_div.opciones .col.b a {
+        background: cadetblue;
+        line-height: 4vw;
+        padding: .5vw 1vw;
+        border-radius: .4vw;
+        color: #f8f8f8;
+        user-select: none;
+    }
+
+    .input_div.opciones .col.b a:hover {
+        cursor: pointer;
+    }
+
+    .input_div.row .col.a {
+        width: 10vw;
+        padding: .5vw 0;
+    }
+
+    .input_div.row .col.a span {
+        display: block;
+        text-align: left;
+        font-size: .9vw;
+        font-weight: 800;
+        height: 3vw;
+        line-height: 3vw;
+    }
+
+    .input_div.row .col.b select {
+        width: 20vw;
+        height: 3vw;
+        outline: 0;
+        border: none;
+    }
+
+    .input_div.row .col.b input {
+        width: 20vw;
+        height: 3vw;
+        outline: 0;
+        border: none;
+        padding: 0 1vw;
+        border-radius: 5px;
+    }
+
+    .btn_add {
+        display: block;
+        padding: 1vw 8vw;
+        text-align: right;
+        font-size: .95vw;
+        font-weight: 800;
+        color: blue;
+        text-decoration: underline;
+        user-select: none;
+    }
+
+    .btn_add:hover {
+        cursor: pointer;
+    }
+
+    .input_items {
+        margin: 0;
+        padding: 0 8vw;
+        width: 100%;
+        height: auto;
+        margin-bottom: 1vw;
+    }
+
+    .error_a {
+        color: red;
+        display: block;
+        font-size: .9vw;
+        font-weight: 800;
+    }
+
+    table#item_detalleVenta {
+        width: 100%;
+        overflow-y: auto;
+        margin-top: 3vw;
+    }
+
+    table#item_detalleVenta thead {
+        text-align: center;
+    }
+
+    table#item_detalleVenta thead tr {}
+
+    table#item_detalleVenta thead tr td {
+        font-size: .9vw;
+        padding: .5vw 1vw;
+        border: 1px solid #000;
+        color: #000;
+    }
+
+    table#item_detalleVenta thead tr.a td {
+        font-weight: 800;
+    }
+
+    table#item_detalleVenta thead tr.b td {
+        font-weight: 540;
+    }
+
+    table#item_detalleVenta thead tr.c td {
+        text-align: left;
+    }
+
+    table#item_detalleVenta tbody {
+        text-align: center;
+    }
+
+    table#item_detalleVenta tbody tr {}
+
+    table#item_detalleVenta tbody tr td {
+        font-size: .9vw;
+        padding: .5vw 0;
+        border: 1px solid #000;
+        color: #414773;
+    }
+
+    table#item_detalleVenta tbody tr td.nombre_td {
+        text-align: left;
+    }
+
+    .input_div.derecha {}
+
+    .input_div.derecha .col.a {
+        width: 7vw;
+    }
+
+    .input_div.derecha .col.a span {
+        text-align: right;
+    }
+
+    .input_div.derecha div.padre {
+        width: auto;
+        height: 4vw;
+        float: right;
+    }
+
+    .input_div.derecha .col.b {
+        padding: .5vw 0 .5vw 1vw;
+    }
+
+    .input_div.derecha .col.b span {}
+
+    .input_div.derecha .col.b input {
+        width: 9vw;
+    }
+</style>
+
+<script src="/js/PruebaPDFJS/xepOnline.jqPlugin.js"></script>
+
+
+
+<div>
+    <nav class="gtco-nav" role="navigation">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-2 col-xs-12">
+                    <div id="gtco-logo"><a style="font-size: 35px" href="/Admin">CIS</a></div>
+                </div>
+
+                <div style="text-align: right ; weigth: 10px">
+                    {{#if tipo}}
+                    <ul>
+                        <!--Administrador -->
+                        <li><a href="/Clientes">Clientes</a>
+                        <li><a href="/administracion/productos">Productos</a>
+
+                            <!--AMBOS -->
+                        <li><a href="/administracion/registrarCompra">Compra</a>
+                        <li><a href="/administracion/registrarVenta"> Venta</a>
+                        <li><a href="/administracion/generarKardex">Generar Kardex</a>
+                        <li><a href="/libro">Libro Diario</a>
+
+
+                        <li class="btn-cta"><a href="/cerrar_sesion"
+                                               onclick="return confirm('¿Esta seguro de cerrar sesion?')"><span>Cerrar
+                                    Sesion</span></a></li>
+
+                    </ul>
+
+
+                    {{else}}
+                    <ul>
+                        <li><a href="/Clientes">Clientes</a>
+                        <li><a href="/administracion/registrarVenta">Venta</a></li>
+                        <!--AMBOS -->    
+                        <li><a href="/administracion/generarKardex">Generar Kardex</a></li>
+                        <li><a href="/libro">Libro Diario</a> 
+                        <li class="btn-cta"><a href="/cerrar_sesion" onclick="return confirm('¿Esta seguro de cerrar sesion?')"><span>Cerrar Sesion</span></a></li>
+
+
+                    </ul>
+
+                    {{/if}}
+                </div> 
+            </div>
+
+        </div>
+    </nav>
+</div>
+
+
+<section id="gtco-hero" class="gtco-cover"
+         style="background-image: url(/images/fondos/libroDiario.jpg);" data-section="home"
+         data-stellar-background-ratio="0.0">
+
+
+    <div class="contenedor" style="margin-top: 100px;">
+        <form id="facturaCompraForm">
+            <div class="input_div row opciones">
+                <div class="col c">
+                    <a id="cerrar_factura" href="/">Cerrar</a>
+                </div>
+                <div class="col a">
+                    <h4>LIBRO DIARIO </h4>
+                </div>
+                <div class="col b">
+                    <a id="exportar_pdf"
+                       onclick="return xepOnline.Formatter.Format('item_detalleVenta', {srctype: 'html', render: 'download', filename: 'Prueba de kardex', cssStyle: [{padding: '0'}]});">PDF</a>
+                </div>
+
+            </div>
+            <div class="input_div row">
+
+                <div class="col b">
+
+                </div>
+            </div>
+            <div class="input_items" id="contenedor_tabla">
+                <table id="item_detalleVenta">
+                    <thead>
+                        <tr class="a">
+                            <td colspan="12">Zona-WIFI</td>
+                        </tr>
+                        <tr class="b">
+                            <td colspan="12"><b>Libro diario de las Transacciones</b></td>
+                        </tr>
+
+                        <tr>
+                            <td rowspan="5"><strong>Fecha</strong></td>
+                            <td rowspan="5" colspan="4"><strong>Descripcion</strong></td>
+                            <td rowspan="5" colspan="2"><strong>Referencia</strong></td>
+                            <td rowspan="5" colspan="2"><strong>Debe</strong></td>
+                            <td rowspan="5" colspan="3"><strong>Haber</strong></td>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="body_table">
+
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+
+</section>

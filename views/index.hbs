@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+
+
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+    {{#if msg.info}}
+    <div class="form-group">
+
+
+        <div class="modal fade" id="mostrarmodal" tabindex="-1" role="dialog" aria-labelledby="basicModal"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <center>
+                    <div class="alert alert-info col-lg-9" role="alert">
+                        {{msg.info}}
+                    </div>
+                </center>
+            </div>
+        </div>
+
+
+        <script>
+            $(document).ready(function () {
+                $("#mostrarmodal").modal("show");
+            });
+        </script>
+
+
+
+
+
+
+        {{/if}}
+
+
+        {{#if msg.error}}
+
+
+
+        <div class="modal fade" id="mostrarmodal" tabindex="-1" role="dialog" aria-labelledby="basicModal"
+            aria-hidden="true">
+            <div class="modal-dialog">
+
+                <center>
+                    <div class="alert alert-danger col-lg-9" role="alert">
+                        {{msg.error}}
+                    </div>
+                </center>
+
+            </div>
+        </div>
+
+
+        <script>
+            $(document).ready(function () {
+                $("#mostrarmodal").modal("show");
+            });
+        </script>
+        {{/if}}
+
+
+        
+
+
+
+        {{> (lookup . 'fragmento') }}
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>

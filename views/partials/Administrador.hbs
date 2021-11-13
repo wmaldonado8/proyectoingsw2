@@ -1,0 +1,133 @@
+<script>
+
+
+    /**
+    validador de formularios
+    **/
+    $(function () {
+
+        $("#formulario1").validate({
+            errorElement: 'div',
+            errorClass: 'hepl-block',
+            ignore: "",
+            rules: {
+                correo: {
+                    required: true,
+                    email: true
+                },
+                contra: {
+                    required: true
+                }
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        buscar();
+    });
+
+    function buscar() {
+
+        /**
+sservicio para cargar las notificaciones en caso un producto tenga bajo stock
+**/
+
+        var url = "http://localhost:3002/notificar";
+        $.ajax({
+            url: url,
+            success: function (data, textStatus, jqXHR) {
+
+                var a = 0 * 1;
+                var html = "<h3>Atencion los siguientes productos estan con bajo Stock</h3> ";
+                $.each(data, function (index, item) {
+
+
+                    html += item.nombre + ": " + item.stock + "<br>";
+
+                    a++;
+
+                });
+
+                if (a >= 1) {
+
+
+                    $(document).ready(function () {
+                        $("#mostrarmodal").modal("show");
+                    });
+
+                }
+                $("#alerta").html(html);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+
+</script>
+
+<center>
+
+
+    <div class="modal fade" id="mostrarmodal" tabindex="-1" role="dialog" aria-labelledby="basicModal"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <center>
+                <div class="alert alert-warning " id="alerta" role="alert">
+                </div>
+            </center>
+        </div>
+    </div>
+</center>
+
+
+<div>
+    <nav class="gtco-nav" role="navigation">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-2 col-xs-12">
+                    <div id="gtco-logo"><a style="font-size: 35px" href="/Admin">CIS</a></div>
+                </div>
+
+                <div style="text-align: right">
+                    <ul>
+                        <!--Administrador -->
+                        <li><a href="/Clientes">Clientes</a>
+
+                        <li><a href="/administracion/productos">Productos</a>
+
+                            <!--AMBOS -->
+                        <li><a href="/administracion/registrarCompra">Compra</a>
+                        <li><a href="/administracion/registrarVenta">Venta</a>
+                        <li><a href="/administracion/generarKardex">Generar Kardex</a>
+                        <li><a href="/libro">Libro Diario</a>
+                        <li class="btn-cta"><a href="/cerrar_sesion"
+                                onclick="return confirm('¿Esta seguro de cerrar sesion?')"><span>Cerrar
+                                    Sesion</span></a></li>
+
+                    </ul>
+                </div> <br>
+            </div>
+
+        </div>
+    </nav>
+
+    <section id="gtco-hero" class="gtco-cover"
+        style="background-image: url(/images/fondos/admin.jpg);" data-section="home"
+        data-stellar-background-ratio="0.0">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-md-offset-0 text-center">
+                    <div class="display-t">
+                        <div class="display-tc">
+                            <h1 class="animate-box" data-animate-effect="fadeIn">Administracion ZONA WIFI</h1>
+                            <br>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
