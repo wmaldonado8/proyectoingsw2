@@ -1,0 +1,7 @@
+{
+  "name": "no-keys",
+  "version": "0.1.0",
+  "main": "no-keys.js",
+  "repository": "aleclarson/no-keys",
+  "description": "Check if an object has no keys"
+}

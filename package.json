@@ -21,6 +21,7 @@
     "thinky": "^2.3.9"
   },
   "devDependencies": {
-    "jsdoc": "^3.6.3"
+    "jsdoc": "^3.6.3",
+    "rethinkdb-mock": "^0.7.1"
   }
 }
