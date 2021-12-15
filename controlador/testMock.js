@@ -4,6 +4,8 @@ var r = require("rethinkdb");
 var cliente = require("../modelos/cliente");
 // Replace `rethinkdbdash` with `rethinkdb-mock`
 const mock = require('mock-require')
+var clienteController = require('../controlador/ClienteController');
+var clienteController = new clienteController();
 const chai = require('chai');
 const expect = chai.expect;
 chai.use(require('sinon-chai'));
@@ -112,6 +114,10 @@ describe('Genrar Kardex', () => {
         name: 'kardex' // The default value
     });
     it('should save without error', async ()=> {
+
+            var result   = clienteController.addTest();
+            assert.equal(result, "text tested");
+
         db.init({
             Cliente: [{
                 apellidos: "Vasquez",
