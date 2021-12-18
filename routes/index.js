@@ -191,7 +191,7 @@ router.get('/libro', authUsuario, function (req, res, next) {
 });
 
 //Visualizar Cliente
-router.get('/Clientes', authUsuario, cliente.visualizar);
+router.get('/Clientes', cliente.visualizar);
 
 //Guardar Cliente
 router.post('/guardarCliente', cliente.guardar);

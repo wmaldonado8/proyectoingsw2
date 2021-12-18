@@ -35,8 +35,8 @@ class controladorPersona {
                     if (person.length <= 0) {
                         var datos = {
 
-                            apellidos: "Jaramillo Jumbo",
-                            nombres: "Danny Michael",
+                            apellidos: "Minga Medina",
+                            nombres: "Angel Favian",
                             fecha_nac: "03-10-1999",
                             edad: "20",
                             id_rol: rol.id
@@ -44,7 +44,7 @@ class controladorPersona {
                         };
 
                         var datosC = {
-                            correo: "danny@unl.edu.ec",
+                            correo: "afminga@unl.edu.ec",
                             clave: "123456"
 
                         };
@@ -101,8 +101,8 @@ class controladorPersona {
                     if (person.length <= 1) {
                         var datos = {
 
-                            apellidos: "Jaramilloxxx Jumbo",
-                            nombres: "Dannyxxx Michael",
+                            apellidos: "Mingaxxx Medina",
+                            nombres: "Angelxxx Favian",
                             fecha_nac: "03-10-1999",
                             edad: "20",
                             id_rol: rol.id
