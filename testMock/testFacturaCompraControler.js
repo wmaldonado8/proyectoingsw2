@@ -1,7 +1,7 @@
 'use strict';
 const rethinkdb = require('rethinkdb-mock')
 var r = require("rethinkdb");
-var cliente = require("../modelos/facturaCompra");
+var factura = require("../modelos/facturaCompra");
 
 const mock = require('mock-require')
 
@@ -17,13 +17,13 @@ describe('Inicializar Base de Datos', () => {
     });
     db.init({
         Cliente: [{
-            apellidos: "Vasquez",
-            cedula: "1150214375",
+            apellidos: "Maldonado",
+            cedula: "1900789973",
             direccion: "Loja",
             external_id: "8600ea68-0bd7-4dc7-9993-dc82e73beacd",
             id: "c9225d9b-1f47-478c-91a7-7ae46f2bdccc",
-            nombres: "Luis",
-            telefono: "255461"
+            nombres: "Walter",
+            telefono: "0990056529"
         }]
     })
 });
