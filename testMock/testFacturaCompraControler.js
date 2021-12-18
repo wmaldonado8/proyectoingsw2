@@ -1,20 +1,17 @@
 'use strict';
 const rethinkdb = require('rethinkdb-mock')
 var r = require("rethinkdb");
-var cliente = require("../modelos/cliente");
-var producto = require("../modelos/producto");
-const app = require("../app");
-// Replace `rethinkdbdash` with `rethinkdb-mock`
+var cliente = require("../modelos/facturaCompra");
+
 const mock = require('mock-require')
-/*var clienteController = require('../controlador/ClienteController');
-var clienteController = new clienteController();*/
+
 const chai = require('chai');
 const request = require("supertest");
 const expect = chai.expect;
 chai.use(require('sinon-chai'));
 mock('rethinkdbdash', rethinkdb)
 
-describe('Genrar Kardex', () => {
+describe('Inicializar Base de Datos', () => {
     const db = rethinkdb({
         name: 'kardex' // The default value
     });
